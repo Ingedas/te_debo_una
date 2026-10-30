@@ -132,7 +132,7 @@ input[type=text],input[type=number],input[type=date]{
 
 /* Listas */
 .list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
-.row{display:grid;grid-template-columns:12px minmax(0,1fr) auto auto;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.row{display:grid;grid-template-columns:34px minmax(0,1fr) auto auto;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
 .row:first-child{border-top:1px solid var(--line)}
 [data-p="0"]{--c:var(--a);--ct:var(--a-ink)}
 [data-p="1"]{--c:var(--b);--ct:var(--b-ink)}
@@ -150,7 +150,8 @@ input[type=text],input[type=number],input[type=date]{
 .rew .cost small{font-family:var(--body);font-weight:600;font-size:12px;color:var(--muted);margin-left:4px}
 .rew .act{grid-column:1/-1;display:flex;gap:8px;align-items:center;justify-content:space-between}
 .btn.ghost{background:transparent;border-color:transparent;color:var(--muted);padding-left:4px;padding-right:4px;text-decoration:underline}
-.balance{padding:14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);display:flex;flex-direction:column;gap:2px}
+.balance{padding:14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);display:flex;align-items:center;gap:14px}
+.bt{display:flex;flex-direction:column;gap:2px;min-width:0}
 .balance b{font-family:var(--display);font-size:34px;font-weight:800;line-height:1;color:var(--ct,var(--ink));font-variant-numeric:tabular-nums}
 .empty{padding:18px 0;color:var(--muted);font-size:15px}
 details summary{cursor:pointer;font-weight:600;min-height:44px;display:flex;align-items:center}
@@ -207,6 +208,25 @@ details form{display:flex;flex-direction:column;gap:12px;padding-bottom:6px}
 .cele-big{font-family:var(--display);font-weight:800;font-size:60px;line-height:.9;text-transform:uppercase;background:linear-gradient(90deg,var(--a-ink),var(--b-ink));-webkit-background-clip:text;background-clip:text;color:transparent;padding-bottom:6px}
 .cele-card p{margin-top:8px;font-size:16px}
 @keyframes pop{from{transform:scale(.55) rotate(-4deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+.av{display:inline-flex;flex:none;border-radius:50%;overflow:hidden;line-height:0;background:var(--surface);--ring:var(--a);box-shadow:0 0 0 2.5px var(--ring)}
+.av.p1{--ring:var(--b)}
+.av img,.av svg{width:100%;height:100%;object-fit:cover;display:block}
+.av.xs{width:20px;height:20px;box-shadow:0 0 0 2px var(--ring)}
+.av.s{width:34px;height:34px;box-shadow:0 0 0 2px var(--ring)}
+.av.m{width:48px;height:48px}
+.av.l{width:76px;height:76px;box-shadow:0 0 0 3px var(--ring)}
+.avbtn{position:relative;border:0;background:transparent;padding:4px;margin:0 0 2px;cursor:pointer;line-height:0;border-radius:50%}
+.side.a .avbtn{align-self:flex-start}
+.side.b .avbtn{align-self:flex-end}
+.avbtn:focus-visible,.mini:focus-visible{outline:3px solid var(--hi);outline-offset:2px}
+.cam{position:absolute;right:0;bottom:2px;width:24px;height:24px;border-radius:50%;background:var(--hi);color:var(--hi-ink);font:700 17px/24px var(--body);text-align:center;border:2px solid var(--board)}
+.mini{align-self:flex-start;border:0;background:transparent;color:var(--board-muted);font:600 12px/1.2 var(--body);text-decoration:underline;padding:6px 0;cursor:pointer;min-height:32px}
+.side.b .mini{align-self:flex-end}
+.chip.who{flex-direction:row;align-items:center;gap:10px}
+.wl{display:flex;flex-direction:column;gap:2px;min-width:0}
+.wl small{font-weight:400;color:var(--muted);font-size:13px}
+.legend .av{vertical-align:middle}
+.cele-av{display:flex;justify-content:center;margin-bottom:12px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 @media (max-width:380px){h1{font-size:34px}.cta{grid-template-columns:1fr}}
 </style>
@@ -234,7 +254,7 @@ details form{display:flex;flex-direction:column;gap:12px;padding-bottom:6px}
         <a class="btn" href="#canjear">Canjear puntos</a>
       </div>
       <div class="note" id="demo" hidden>
-        <p>Estos movimientos son de ejemplo. Cambia los nombres del marcador y empieza con los vuestros.</p>
+        <p>Estos movimientos son de ejemplo. Cambia los nombres, toca la foto para poner la vuestra y empieza.</p>
         <button class="btn sm" type="button" data-act="cleardemo">Borrar ejemplos</button>
       </div>
       <h2>Últimos movimientos</h2>
@@ -350,14 +370,15 @@ details form{display:flex;flex-direction:column;gap:12px;padding-bottom:6px}
     <button class="btn" type="button" id="rdel" data-act="rdelete" hidden>Eliminar este canje</button>
   </form>
 </div>
-<div class="cele" id="cele" hidden><div class="cele-card"><div class="cele-big" id="celeBig"></div><p id="celeTxt"></p></div></div>
+<div class="cele" id="cele" hidden><div class="cele-card"><div class="cele-av" id="celeAv"></div><div class="cele-big" id="celeBig"></div><p id="celeTxt"></p></div></div>
 <canvas id="confetti" aria-hidden="true"></canvas>
+<input type="file" id="photoIn" accept="image/*" hidden>
 <div class="toast" id="toast" hidden></div>
 
 <script>
 (function(){
 'use strict';
-var KEY='quedamos-en-paz-v2';
+var KEY='quedamos-en-paz-v3';
 var TYPES=[
   {id:'fiesta',name:'Fiesta o noche',rate:8},
   {id:'cena',name:'Cena o copas',rate:6},
@@ -407,19 +428,21 @@ function typeOf(id){for(var i=0;i<TYPES.length;i++)if(TYPES[i].id===id)return TY
 function seed(){
   var t=new Date();
   return {
-    names:['Alex','Sam'],
+    names:['Soledad','Javier'],
+    avatars:[null,null],
+    seeds:[Math.floor(Math.random()*997)+1,Math.floor(Math.random()*997)+1],
     rewards:DEF.map(function(r){return Object.assign({},r)}),
     entries:[
-      {id:'e1',kind:'salida',who:1,title:'Cena de cumple con compis',type:'cena',hours:3,pts:18,date:ymd(addDays(t,-12)),demo:true},
-      {id:'e2',kind:'salida',who:0,title:'Ruta en bici con los colegas',type:'deporte',hours:5,pts:25,date:ymd(addDays(t,-6)),demo:true},
-      {id:'e3',kind:'salida',who:1,title:'Fiesta con sus amigas',type:'fiesta',hours:5,pts:55,date:ymd(addDays(t,-1)),extras:['madrugada'],demo:true}
+      {id:'e1',kind:'salida',who:0,title:'Cena de cumple con las amigas',type:'cena',hours:3,pts:18,date:ymd(addDays(t,-12)),demo:true},
+      {id:'e2',kind:'salida',who:1,title:'Ruta en bici con los colegas',type:'deporte',hours:5,pts:25,date:ymd(addDays(t,-6)),demo:true},
+      {id:'e3',kind:'salida',who:0,title:'Fiesta con sus amigas',type:'fiesta',hours:5,pts:55,date:ymd(addDays(t,-1)),extras:['madrugada'],demo:true}
     ]
   };
 }
 function load(){
   try{
     var r=localStorage.getItem(KEY);
-    if(r){var o=JSON.parse(r);if(o&&Array.isArray(o.entries)&&Array.isArray(o.names)&&Array.isArray(o.rewards))return o}
+    if(r){var o=JSON.parse(r);if(o&&Array.isArray(o.entries)&&Array.isArray(o.names)&&Array.isArray(o.rewards)){if(!Array.isArray(o.avatars))o.avatars=[null,null];if(!Array.isArray(o.seeds))o.seeds=[11,23];return o}}
   }catch(e){}
   return seed();
 }
@@ -429,6 +452,38 @@ function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 function net(){return S.entries.reduce(function(n,e){return n+(e.who===0?-e.pts:e.pts)},0)}
 function creditor(){var n=net();return n>0?0:(n<0?1:-1)}
 function nm(i){return S.names[i]||('Persona '+(i+1))}
+var SKIN=['#F6D7BE','#F2C9A5','#E3A982','#C98F6A','#8D5A3B'];
+var HAIR=['#2B2118','#5A3A22','#B5651D','#D9B26F','#8A8A92','#1C1C28'];
+var BGS=['#9FE3D1','#F9B1D0','#FFE08A','#C9B6F2','#A9D3FF','#FFC9A8'];
+var SHIRT=['#2A2540','#6B6585','#B8E0F5','#FFFFFF','#F9B1D0','#9FE3D1'];
+function hsh(seed,k){var x=Math.sin(seed*12.9898+k*78.233)*43758.5453;return Math.floor((x-Math.floor(x))*10000)}
+function pk(arr,seed,k){return arr[hsh(seed,k)%arr.length]}
+function avatarSvg(i){
+  var sd=(S.seeds&&S.seeds[i]!=null)?S.seeds[i]:i*7+3;
+  var skin=pk(SKIN,sd,1),hair=pk(HAIR,sd,2),bg=pk(BGS,sd,3),shirt=pk(SHIRT,sd,4);
+  var style=hsh(sd,5)%3,ink='#2A2540',back='',front='',extra='';
+  var cap='<path d="M30 45C29 24 71 24 70 45C68 35 58 31 50 32C42 31 32 35 30 45Z" fill="'+hair+'"/>';
+  if(i===0){
+    if(style===0){back='<path d="M27 50C24 20 76 20 73 50L75 84H25Z" fill="'+hair+'"/>';front='<path d="M30 44C32 26 68 26 70 44C60 35 42 35 30 44Z" fill="'+hair+'"/>'}
+    else if(style===1){back='<circle cx="50" cy="20" r="9" fill="'+hair+'"/>';front='<path d="M30 45C30 24 70 24 70 45C62 36 38 36 30 45Z" fill="'+hair+'"/>'}
+    else{back='<path d="M28 50C26 22 74 22 72 50L70 70C60 74 40 74 30 70Z" fill="'+hair+'"/>';front='<path d="M30 44C34 28 66 26 70 44C66 36 56 33 50 33C44 34 34 38 30 44Z" fill="'+hair+'"/>'}
+  }else{
+    if(style===0){front=cap}
+    else if(style===1){front=cap;extra='<path d="M31 52C32 71 68 71 69 52L66 52C64 61 36 61 34 52Z" fill="'+hair+'"/>'}
+    else{front=[[36,33],[44,27],[55,27],[64,33],[67,41],[33,41]].map(function(c){return '<circle cx="'+c[0]+'" cy="'+c[1]+'" r="7.5" fill="'+hair+'"/>'}).join('')}
+  }
+  return '<svg viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" fill="'+bg+'"/>'+back+
+    '<path d="M14 100C16 78 32 72 50 72S84 78 86 100Z" fill="'+shirt+'"/><rect x="43" y="60" width="14" height="16" fill="'+skin+'"/>'+
+    '<ellipse cx="50" cy="46" rx="19" ry="22" fill="'+skin+'"/><ellipse cx="31" cy="48" rx="3" ry="5" fill="'+skin+'"/><ellipse cx="69" cy="48" rx="3" ry="5" fill="'+skin+'"/>'+
+    extra+front+
+    '<circle cx="43" cy="47" r="2.4" fill="'+ink+'"/><circle cx="57" cy="47" r="2.4" fill="'+ink+'"/>'+
+    '<circle cx="38" cy="54" r="3.2" fill="#F9B1D0" opacity=".45"/><circle cx="62" cy="54" r="3.2" fill="#F9B1D0" opacity=".45"/>'+
+    '<path d="M44 57Q50 63 56 57" fill="none" stroke="'+ink+'" stroke-width="2.4" stroke-linecap="round"/></svg>';
+}
+function av(i,cls){
+  var src=S.avatars&&S.avatars[i];
+  return '<span class="av p'+i+' '+cls+'">'+(src?'<img src="'+src+'" alt="">':avatarSvg(i))+'</span>';
+}
 function sorted(list){
   return list.map(function(e,i){return {e:e,i:i}}).sort(function(a,b){
     if(a.e.date!==b.e.date)return a.e.date<b.e.date?1:-1;
@@ -454,9 +509,11 @@ function renderBoard(){
   var fillL=Math.min(pct,50),fillW=Math.abs(pct-50);
   function side(i,c){
     return '<div class="side '+(i?'b':'a')+(lead===-1||lead===i?'':' dim')+'">'+
+      '<button type="button" class="avbtn" data-act="photo" data-i="'+i+'" aria-label="Cambiar la foto de '+esc(nm(i))+'">'+av(i,'l')+'<span class="cam" aria-hidden="true">+</span></button>'+
       '<input class="tag" data-name="'+i+'" value="'+esc(S.names[i])+'" maxlength="14" aria-label="Nombre de la persona '+(i+1)+'">'+
       '<div class="score">'+c+'</div>'+
-      '<div class="sub">'+(lead===i?'<span class="pill">Le deben</span>':'puntos a favor')+'</div></div>';
+      '<div class="sub">'+(lead===i?'<span class="pill">Le deben</span>':'puntos a favor')+'</div>'+
+      (S.avatars[i]?'<button type="button" class="mini" data-act="rmphoto" data-i="'+i+'">Quitar foto</button>':'')+'</div>';
   }
   $('#board').innerHTML=
     '<div class="board-row">'+side(0,Math.max(n,0))+'<div class="vs">VS</div>'+side(1,Math.max(-n,0))+'</div>'+
@@ -497,7 +554,7 @@ function renderHist(){
   if(!list.length){$('#hist').innerHTML='<li class="empty">Todavía no hay movimientos. Registra la primera salida y empieza a sumar.</li>';return}
   $('#hist').innerHTML=list.map(function(e){
     var t=entryText(e);
-    return '<li class="row" data-p="'+e.who+'"><span class="dot"></span>'+
+    return '<li class="row" data-p="'+e.who+'">'+av(e.who,'s')+
       '<div class="rt"><b>'+esc(e.title)+'</b><span class="meta">'+esc(t.meta)+'</span></div>'+
       '<div class="rp" data-p="'+t.who+'"><b>'+t.chip+'</b><span>'+esc(t.sub)+'</span></div>'+
       '<button class="x" type="button" data-act="del" data-id="'+esc(e.id)+'" aria-label="Borrar movimiento">×</button></li>';
@@ -515,7 +572,7 @@ function calc(){
 }
 function renderForm(){
   $('#whoSeg').innerHTML=[0,1].map(function(i){
-    return '<button type="button" class="chip who" data-act="setwho" data-who="'+i+'" aria-pressed="'+(F.who===i)+'">'+esc(nm(i))+'<small>ha salido</small></button>';
+    return '<button type="button" class="chip who" data-act="setwho" data-who="'+i+'" aria-pressed="'+(F.who===i)+'">'+av(i,'s')+'<span class="wl">'+esc(nm(i))+'<small>ha salido</small></span></button>';
   }).join('');
   $('#typeChips').innerHTML=TYPES.map(function(t){
     return '<button type="button" class="chip" data-act="settype" data-type="'+t.id+'" aria-pressed="'+(F.type===t.id)+'">'+t.name+'<small>'+t.rate+' puntos por hora</small></button>';
@@ -535,8 +592,8 @@ function renderRewards(){
   var k=creditor(),c=Math.abs(net());
   $('#balance').setAttribute('data-p',k<0?'':k);
   $('#balance').innerHTML=k<0
-    ? '<span class="meta">Saldo</span><b>0</b><span>Ahora mismo nadie tiene puntos a favor. Registra una salida para empezar.</span>'
-    : '<span class="meta">Saldo a favor de '+esc(nm(k))+'</span><b>'+c+' puntos</b><span>Solo puede canjear quien tiene el saldo.</span>';
+    ? '<div class="bt"><span class="meta">Saldo</span><b>0</b><span>Ahora mismo nadie tiene puntos a favor. Registra una salida para empezar.</span></div>'
+    : av(k,'m')+'<div class="bt"><span class="meta">Saldo a favor de '+esc(nm(k))+'</span><b>'+c+' puntos</b><span>Solo puede canjear quien tiene el saldo.</span></div>';
   $('#rewards').innerHTML=S.rewards.slice().sort(function(a,b){return a.cost-b.cost}).map(function(r){
     var btn;
     if(k<0)btn='<button class="btn sm" type="button" disabled>Sin saldo</button>';
@@ -570,12 +627,12 @@ function renderCal(){
     html+='<button type="button" class="day'+(key===TODAY?' today':'')+(key===cal.sel?' sel':'')+'" data-act="calsel" data-date="'+key+'" aria-label="'+esc(fmtDate(key))+(ev.length?', '+ev.length+' movimientos':'')+'">'+d+'<span class="dots">'+dots+'</span></button>';
   }
   $('#cal').innerHTML=html;
-  $('#legend').innerHTML='<span data-p="0"><i></i>Salió '+esc(nm(0))+'</span><span data-p="1"><i></i>Salió '+esc(nm(1))+'</span><span><i class="canje"></i>Canje</span>';
+  $('#legend').innerHTML='<span data-p="0">'+av(0,'xs')+'Salió '+esc(nm(0))+'</span><span data-p="1">'+av(1,'xs')+'Salió '+esc(nm(1))+'</span><span><i class="canje"></i>Canje</span>';
   $('#dayTitle').textContent=relDay(cal.sel)===fmtDate(cal.sel)?fmtDate(cal.sel):relDay(cal.sel)+', '+fmtDate(cal.sel);
   var evs=S.entries.filter(function(e){return e.date===cal.sel});
   $('#dayList').innerHTML=evs.length?evs.map(function(e){
     var t=entryText(e);
-    return '<li class="row" data-p="'+e.who+'" style="grid-template-columns:12px minmax(0,1fr) auto"><span class="dot"></span>'+
+    return '<li class="row" data-p="'+e.who+'" style="grid-template-columns:34px minmax(0,1fr) auto">'+av(e.who,'s')+
       '<div class="rt"><b>'+esc(e.title)+'</b><span class="meta">'+esc(t.meta)+'</span>'+
       '<a class="gc" href="'+gcal(e)+'" target="_blank" rel="noopener">Añadir a Google Calendar</a></div>'+
       '<div class="rp" data-p="'+t.who+'"><b>'+t.chip+'</b><span>'+esc(t.sub)+'</span></div></li>';
@@ -623,7 +680,7 @@ document.addEventListener('click',function(ev){
       S.entries=S.entries.filter(function(e){return !e.demo});save();render();toast('Ejemplos borrados. El marcador está a cero.');break;
     case 'resetall':
       if(t.getAttribute('data-sure')==='1'){
-        S={names:['Alex','Sam'],rewards:DEF.map(function(r){return Object.assign({},r)}),entries:[]};
+        S=seed();S.entries=[];
         save();render();t.removeAttribute('data-sure');t.textContent='Borrar todo';toast('Todo borrado.');
       }else{
         t.setAttribute('data-sure','1');t.textContent='¿Seguro? Pulsa otra vez';
@@ -649,6 +706,8 @@ document.addEventListener('click',function(ev){
       }
       break;
     case 'gocal':location.hash='#calendario';$('#toast').hidden=true;break;
+    case 'photo':photoFor=Number(t.getAttribute('data-i'));$('#photoIn').click();break;
+    case 'rmphoto':S.avatars[Number(t.getAttribute('data-i'))]=null;save();render();toast('Foto quitada.');break;
     case 'newreward':openRew(null);break;
     case 'editreward':openRew(id);break;
     case 'rcancel':$('#esheet').hidden=true;break;
@@ -703,6 +762,28 @@ document.addEventListener('click',function(ev){
   var e=S.entries.pop();if(e){save();render()}
   lastDel=null;$('#toast').hidden=true;
 });
+/* Fotos */
+var photoFor=0;
+$('#photoIn').addEventListener('change',function(){
+  var f=this.files&&this.files[0];this.value='';
+  if(!f)return;
+  var fr=new FileReader();
+  fr.onerror=function(){toast('No he podido leer esa foto.')};
+  fr.onload=function(){
+    var img=new Image();
+    img.onerror=function(){toast('Ese archivo no parece una imagen.')};
+    img.onload=function(){
+      var n=256,c=document.createElement('canvas');c.width=c.height=n;
+      var m=Math.min(img.width,img.height);
+      c.getContext('2d').drawImage(img,(img.width-m)/2,(img.height-m)/2,m,m,0,0,n,n);
+      S.avatars[photoFor]=c.toDataURL('image/jpeg',0.82);
+      save();render();toast('Foto de '+nm(photoFor)+' actualizada.');
+    };
+    img.src=fr.result;
+  };
+  fr.readAsDataURL(f);
+});
+
 /* Edición de canjes */
 var editingRew=null,lastRew=null;
 function openRew(id){
@@ -773,6 +854,7 @@ function tick(){
 }
 function celebrate(pr){
   var paz=net()===0;
+  $('#celeAv').innerHTML=av(pr.k,'l');
   $('#celeBig').textContent=paz?'¡En paz!':'¡Canjeado!';
   $('#celeTxt').textContent=nm(pr.k)+' canjea «'+pr.r.name+'»'+(paz?'. Y quedáis en paz.':'.');
   $('#cele').hidden=false;
