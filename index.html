@@ -185,8 +185,8 @@ details form{display:flex;flex-direction:column;gap:12px;padding-bottom:6px}
   position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--surface);border-top:1px solid var(--line);
   padding:6px max(16px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));
 }
-.nav-in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
-.nav a{position:relative;text-align:center;text-decoration:none;font-weight:600;font-size:13px;color:var(--muted);padding:12px 2px 10px;border-radius:8px}
+.nav-in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);gap:2px}
+.nav a{position:relative;text-align:center;text-decoration:none;font-weight:600;font-size:12px;color:var(--muted);padding:12px 0 10px;border-radius:8px}
 .nav a[aria-current="page"]{color:var(--ink)}
 .nav a[aria-current="page"]::before{content:"";position:absolute;left:20%;right:20%;top:0;height:4px;border-radius:0 0 4px 4px;background:var(--hi)}
 .sheet-wrap{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center}
@@ -227,6 +227,26 @@ details form{display:flex;flex-direction:column;gap:12px;padding-bottom:6px}
 .wl small{font-weight:400;color:var(--muted);font-size:13px}
 .legend .av{vertical-align:middle}
 .cele-av{display:flex;justify-content:center;margin-bottom:12px}
+.verdict.warn{color:var(--hi);font-weight:600}
+.hot{display:inline-block;margin-left:6px;padding:1px 8px;border-radius:99px;background:var(--b);color:#3A0F28;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;vertical-align:middle}
+.sug{display:flex;flex-direction:column;gap:10px}
+.sug:empty{display:none}
+.sg{background:var(--hi-soft);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.sg p{flex:1;min-width:180px;font-weight:600}
+select{width:100%;min-height:44px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);font:400 16px/1.3 var(--body);padding:8px 12px}
+.jk{display:grid;grid-template-columns:34px minmax(0,1fr);gap:8px 12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.jk:first-child{border-top:1px solid var(--line)}
+.jb{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap}
+.seg.three{grid-template-columns:repeat(3,1fr)}
+.seg.three .chip{align-items:center;text-align:center;justify-content:center;min-height:44px}
+.stg{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr) minmax(0,1fr);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:6px 12px}
+.stg>*{padding:10px 4px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+.stg>*:nth-last-child(-n+3){border-bottom:0}
+.stg b{font-size:14px;text-align:center;overflow-wrap:anywhere}
+.stg .pa{color:var(--a-ink)}.stg .pb{color:var(--b-ink)}
+.stg .sv{text-align:center;font-weight:700}
+.stg .sl{font-size:14px;color:var(--muted)}
+.cardimg{width:100%;max-width:420px;height:auto;border-radius:14px;border:1px solid var(--line);align-self:center;background:var(--surface);aspect-ratio:1080/1350}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 @media (max-width:380px){h1{font-size:34px}.cta{grid-template-columns:1fr}}
 </style>
@@ -253,6 +273,7 @@ details form{display:flex;flex-direction:column;gap:12px;padding-bottom:6px}
         <a class="btn primary" href="#registrar">Registrar salida</a>
         <a class="btn" href="#canjear">Canjear puntos</a>
       </div>
+      <div class="sug" id="sug"></div>
       <div class="note" id="demo" hidden>
         <p>Estos movimientos son de ejemplo. Cambia los nombres, toca la foto para poner la vuestra y empieza.</p>
         <button class="btn sm" type="button" data-act="cleardemo">Borrar ejemplos</button>
@@ -310,6 +331,43 @@ details form{display:flex;flex-direction:column;gap:12px;padding-bottom:6px}
         <button class="btn" type="button" data-act="restore">Recuperar los de serie</button>
       </div>
       <ul class="list" id="rewards"></ul>
+      <h2>Comodines</h2>
+      <p class="meta">Cada uno tiene un comodín al mes. Si no lo usa, se pierde.</p>
+      <ul class="list" id="jokers"></ul>
+      <h2>Reglas</h2>
+      <label class="f" for="expSel">Los puntos caducan a los
+        <select id="expSel">
+          <option value="30">30 días</option>
+          <option value="60">60 días</option>
+          <option value="90">90 días</option>
+          <option value="0">Nunca caducan</option>
+        </select>
+      </label>
+      <p class="meta">Se cuentan desde el día de la salida. Hay que ponerse de acuerdo los dos.</p>
+      <label class="check" for="spicyChk"><input type="checkbox" id="spicyChk"><span>Modo picante: canjes más atrevidos, solo para adultos y de mutuo acuerdo</span></label>
+    </section>
+
+    <section data-view="resumen" hidden>
+      <h2>Resumen</h2>
+      <div class="seg three">
+        <button type="button" class="chip" data-act="persel" data-per="semana" aria-pressed="true">Semana</button>
+        <button type="button" class="chip" data-act="persel" data-per="mes" aria-pressed="false">Mes</button>
+        <button type="button" class="chip" data-act="persel" data-per="anio" aria-pressed="false">Año</button>
+      </div>
+      <div class="calhead">
+        <button class="btn" type="button" data-act="sumprev" aria-label="Periodo anterior">‹</button>
+        <h2 id="sumLabel"></h2>
+        <button class="btn" type="button" id="sumNext" data-act="sumnext" aria-label="Periodo siguiente">›</button>
+      </div>
+      <div class="board" id="sumHead"></div>
+      <div class="stg" id="sumStats"></div>
+      <h2>Tarjeta para compartir</h2>
+      <img id="cardImg" class="cardimg" alt="Tarjeta del resumen para compartir">
+      <div class="cta">
+        <button class="btn primary" type="button" data-act="sharecard">Compartir tarjeta</button>
+        <button class="btn" type="button" data-act="copytext">Copiar texto</button>
+      </div>
+      <p class="meta" id="shareText"></p>
     </section>
 
     <section data-view="calendario" hidden>
@@ -331,6 +389,7 @@ details form{display:flex;flex-direction:column;gap:12px;padding-bottom:6px}
     <a href="#marcador" data-nav="marcador">Marcador</a>
     <a href="#registrar" data-nav="registrar">Registrar</a>
     <a href="#canjear" data-nav="canjear">Canjear</a>
+    <a href="#resumen" data-nav="resumen">Resumen</a>
     <a href="#calendario" data-nav="calendario">Calendario</a>
   </div>
 </nav>
@@ -370,6 +429,14 @@ details form{display:flex;flex-direction:column;gap:12px;padding-bottom:6px}
     <button class="btn" type="button" id="rdel" data-act="rdelete" hidden>Eliminar este canje</button>
   </form>
 </div>
+<div class="sheet-wrap" id="jsheet" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="jTitle">
+    <h2 id="jTitle">Perdonar una salida</h2>
+    <p class="meta" id="jinfo"></p>
+    <ul class="list" id="jlist"></ul>
+    <button class="btn" type="button" data-act="jcancel">Cancelar</button>
+  </div>
+</div>
 <div class="cele" id="cele" hidden><div class="cele-card"><div class="cele-av" id="celeAv"></div><div class="cele-big" id="celeBig"></div><p id="celeTxt"></p></div></div>
 <canvas id="confetti" aria-hidden="true"></canvas>
 <input type="file" id="photoIn" accept="image/*" hidden>
@@ -390,15 +457,24 @@ var EXTRAS=[
   {id:'resaca',name:'Resaca o agotamiento al día siguiente',pts:10},
   {id:'aviso',name:'Avisó con poco tiempo',pts:5}
 ];
+var SPICY=[
+  {id:'s1',name:'Sesión de besos de 10 minutos',desc:'Cronometrados y sin interrupciones.',cost:20,spicy:true},
+  {id:'s2',name:'Baño juntos con música',desc:'Velas opcionales, sonrisa obligatoria.',cost:60,spicy:true},
+  {id:'s3',name:'Masaje con velas y sin prisa',desc:'Aceite incluido, relojes fuera.',cost:70,spicy:true},
+  {id:'s4',name:'Cita a ciegas en casa',desc:'Una de las dos personas prepara la sorpresa.',cost:75,spicy:true},
+  {id:'s5',name:'Noche sin móviles ni horarios',desc:'Lo que pase, pasa.',cost:80,spicy:true},
+  {id:'s6',name:'Vale por una noche de «ya sabes»',desc:'Se canjea con una sonrisa cómplice.',cost:100,spicy:true}
+];
+function allRewards(){return S.rewards.concat(S.settings&&S.settings.spicy?SPICY:[])}
 var DEF=[
   {id:'r8',name:'Un abrazo de dos minutos',desc:'Sin mirar el móvil ni la hora.',cost:5},
   {id:'r9',name:'Nota o carta de amor',desc:'A mano, con faltas de ortografía permitidas.',cost:10},
   {id:'r1',name:'Elegir la peli o la serie',desc:'Sin vetos ni suspiros.',cost:15},
   {id:'r10',name:'Elegir el restaurante',desc:'Y nada de "me da igual".',cost:20},
-  {id:'r11',name:'Libre de fregar una noche',desc:'Los platos los friega la otra persona.',cost:25},
+  {id:'r11',name:'Elegir el plan del domingo',desc:'Y se cumple sin poner cara.',cost:25},
   {id:'r2',name:'Desayuno en la cama',desc:'Con zumo y todo.',cost:30},
   {id:'r12',name:'Dormir hasta tarde el sábado',desc:'Sin ruidos ni preguntas.',cost:30},
-  {id:'r13',name:'Hacer la compra de la semana',desc:'Con lista y sin quejas.',cost:35},
+  {id:'r13',name:'Brunch fuera pagado',desc:'Invita la otra persona.',cost:35},
   {id:'r3',name:'Masaje de 20 minutos',desc:'Cronometrado, sin trampas.',cost:40},
   {id:'r14',name:'Comodín: perdonar un olvido',desc:'Aniversario, cumple o recado.',cost:45},
   {id:'r5',name:'Tarde de amor sin móviles',desc:'Canje por cariño, sin letra pequeña.',cost:50},
@@ -430,6 +506,8 @@ function seed(){
   return {
     names:['Soledad','Javier'],
     avatars:[null,null],
+    jokers:[],
+    settings:{expiry:60},
     seeds:[Math.floor(Math.random()*997)+1,Math.floor(Math.random()*997)+1],
     rewards:DEF.map(function(r){return Object.assign({},r)}),
     entries:[
@@ -442,14 +520,65 @@ function seed(){
 function load(){
   try{
     var r=localStorage.getItem(KEY);
-    if(r){var o=JSON.parse(r);if(o&&Array.isArray(o.entries)&&Array.isArray(o.names)&&Array.isArray(o.rewards)){if(!Array.isArray(o.avatars))o.avatars=[null,null];if(!Array.isArray(o.seeds))o.seeds=[11,23];return o}}
+    if(r){var o=JSON.parse(r);if(o&&Array.isArray(o.entries)&&Array.isArray(o.names)&&Array.isArray(o.rewards)){if(!Array.isArray(o.avatars))o.avatars=[null,null];if(!Array.isArray(o.jokers))o.jokers=[];if(!o.settings)o.settings={expiry:60};o.rewards.forEach(function(r){if((r.id==='r11'&&r.name==='Libre de fregar una noche')||(r.id==='r13'&&r.name==='Hacer la compra de la semana')){var d=DEF.filter(function(x){return x.id===r.id})[0];r.name=d.name;r.desc=d.desc}});if(!Array.isArray(o.seeds))o.seeds=[11,23];return o}}
   }catch(e){}
   return seed();
 }
 var S=load();
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function save(){LGc=null;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
-function net(){return S.entries.reduce(function(n,e){return n+(e.who===0?-e.pts:e.pts)},0)}
+/* Libro de puntos: caducidad y comodines */
+function dn(s){var p=s.split('-').map(Number);return Math.round(Date.UTC(p[0],p[1]-1,p[2])/86400000)}
+function expDays(){var e=S.settings&&S.settings.expiry;return e==null?60:e}
+function effDate(e){
+  if(e.kind==='canje'&&e.made)return e.made;
+  return e.date<TODAY?e.date:TODAY;
+}
+function frozenOverlap(owner,a,b){
+  var tot=0;
+  S.jokers.forEach(function(j){
+    if(j.type!=='freeze'||j.who!==owner)return;
+    var f0=dn(j.date),lo=Math.max(f0,a),hi=Math.min(f0+30,b);
+    if(hi>lo)tot+=hi-lo;
+  });
+  return tot;
+}
+function lotAge(owner,lot,ref){
+  var a=dn(lot.date),b=dn(ref);
+  return (b-a)-frozenOverlap(owner,a,b);
+}
+function ledger(){
+  var lots=[[],[]],expired=[0,0],exp=expDays();
+  function drop(ref){
+    if(!exp)return;
+    for(var p=0;p<2;p++){
+      lots[p]=lots[p].filter(function(l){
+        if(lotAge(p,l,ref)>exp){expired[p]+=l.pts;return false}
+        return true;
+      });
+    }
+  }
+  function use(arr,n){
+    while(n>0&&arr.length){var l=arr[0];if(l.pts<=n){n-=l.pts;arr.shift()}else{l.pts-=n;n=0}}
+    return n;
+  }
+  S.entries.map(function(e,i){return {e:e,i:i,d:effDate(e)}}).sort(function(a,b){
+    return a.d<b.d?-1:(a.d>b.d?1:a.i-b.i);
+  }).forEach(function(x){
+    var e=x.e,pts=e.forgiven?0:e.pts;
+    drop(x.d);
+    if(e.kind==='salida'){
+      var rem=use(lots[e.who],pts);
+      if(rem>0)lots[1-e.who].push({pts:rem,date:e.date<TODAY?e.date:TODAY,title:e.title});
+    }else use(lots[e.who],pts);
+  });
+  drop(TODAY);
+  return {lots:lots,expired:expired};
+}
+var LGc=null;
+function LG(){return LGc||(LGc=ledger())}
+function sumLots(a){return a.reduce(function(n,l){return n+l.pts},0)}
+function net(){var L=LG();return sumLots(L.lots[0])-sumLots(L.lots[1])}
 function creditor(){var n=net();return n>0?0:(n<0?1:-1)}
 function nm(i){return S.names[i]||('Persona '+(i+1))}
 var SKIN=['#F6D7BE','#F2C9A5','#E3A982','#C98F6A','#8D5A3B'];
@@ -496,8 +625,8 @@ function verdict(){
   var n=net();
   if(n===0)return 'Estáis en paz. Nadie debe nada, de momento.';
   var k=creditor(),c=Math.abs(n);
-  var afford=S.rewards.filter(function(r){return r.cost<=c}).sort(function(a,b){return b.cost-a.cost})[0];
-  var next=S.rewards.filter(function(r){return r.cost>c}).sort(function(a,b){return a.cost-b.cost})[0];
+  var afford=allRewards().filter(function(r){return r.cost<=c}).sort(function(a,b){return b.cost-a.cost})[0];
+  var next=allRewards().filter(function(r){return r.cost>c}).sort(function(a,b){return a.cost-b.cost})[0];
   var t='<b>'+esc(nm(k))+'</b> tiene '+c+' puntos a favor.';
   if(afford)t+=' Le da para: '+esc(afford.name.toLowerCase())+'.';
   if(next)t+=' Para '+esc(next.name.toLowerCase())+' le faltan '+(next.cost-c)+'.';
@@ -520,7 +649,7 @@ function renderBoard(){
     '<div class="tug" style="--c:'+(n>0?'var(--a-board)':'var(--b-board)')+'" aria-hidden="true">'+
       '<div class="tug-fill" style="left:'+fillL+'%;width:'+fillW+'%"></div><div class="tug-mid"></div>'+
       '<div class="tug-mark" style="left:'+pct+'%"></div></div>'+
-    '<p class="verdict">'+verdict()+'</p>';
+    '<p class="verdict">'+verdict()+'</p>'+expWarn();
   tweenScores([Math.max(n,0),Math.max(-n,0)]);
 }
 var prevScore=null;
@@ -547,7 +676,9 @@ function entryText(e){
   if(isS)meta+=' · '+typeOf(e.type).name+(e.hours?' · '+fmtH(e.hours)+' h':'')+' · salió '+nm(e.who);
   else meta+=' · canje de '+nm(e.who);
   if(e.note)meta+=' · '+e.note;
-  return {meta:meta,chip:(isS?'+':'−')+e.pts,who:isS?other:e.who,sub:isS?'para '+nm(other):'gasta '+nm(e.who)};
+  var o={meta:meta,chip:(isS?'+':'−')+e.pts,who:isS?other:e.who,sub:isS?'para '+nm(other):'gasta '+nm(e.who)};
+  if(e.forgiven){o.chip='0';o.sub='perdonada';o.meta+=' · perdonada'}
+  return o;
 }
 function renderHist(){
   var list=sorted(S.entries).slice(0,10);
@@ -594,14 +725,14 @@ function renderRewards(){
   $('#balance').innerHTML=k<0
     ? '<div class="bt"><span class="meta">Saldo</span><b>0</b><span>Ahora mismo nadie tiene puntos a favor. Registra una salida para empezar.</span></div>'
     : av(k,'m')+'<div class="bt"><span class="meta">Saldo a favor de '+esc(nm(k))+'</span><b>'+c+' puntos</b><span>Solo puede canjear quien tiene el saldo.</span></div>';
-  $('#rewards').innerHTML=S.rewards.slice().sort(function(a,b){return a.cost-b.cost}).map(function(r){
+  $('#rewards').innerHTML=allRewards().sort(function(a,b){return a.cost-b.cost}).map(function(r){
     var btn;
     if(k<0)btn='<button class="btn sm" type="button" disabled>Sin saldo</button>';
     else if(r.cost>c)btn='<button class="btn sm" type="button" disabled>Faltan '+(r.cost-c)+'</button>';
     else btn='<button class="btn primary sm" type="button" data-act="redeem" data-id="'+esc(r.id)+'">Canjear</button>';
-    return '<li class="rew"><div style="min-width:0"><b>'+esc(r.name)+'</b><div class="meta">'+esc(r.desc||'')+'</div></div>'+
+    return '<li class="rew"><div style="min-width:0"><b>'+esc(r.name)+'</b>'+(r.spicy?' <span class="hot">picante</span>':'')+'<div class="meta">'+esc(r.desc||'')+'</div></div>'+
       '<div class="cost">'+r.cost+'<small>pts</small></div>'+
-      '<div class="act"><button class="btn ghost sm" type="button" data-act="editreward" data-id="'+esc(r.id)+'" aria-label="Editar '+esc(r.name)+'">Editar</button>'+btn+'</div></li>';
+      '<div class="act">'+(r.spicy?'<span></span>':'<button class="btn ghost sm" type="button" data-act="editreward" data-id="'+esc(r.id)+'" aria-label="Editar '+esc(r.name)+'">Editar</button>')+btn+'</div></li>';
   }).join('');
 }
 
@@ -639,7 +770,7 @@ function renderCal(){
   }).join(''):'<li class="empty">Nada este día. Los canjes con fecha aparecen aquí.</li>';
 }
 
-function render(){renderBoard();renderHist();renderForm();renderRewards();renderCal()}
+function render(){LGc=null;renderBoard();renderSug();renderHist();renderForm();renderRewards();renderJokers();renderCal();renderSummary()}
 
 /* Avisos */
 var tt,lastDel=null,pendingReward=null;
@@ -652,10 +783,10 @@ function toast(msg,act){
 /* Vistas */
 function showView(){
   var v=(location.hash||'#marcador').slice(1);
-  if(['marcador','registrar','canjear','calendario'].indexOf(v)<0)v='marcador';
+  if(['marcador','registrar','canjear','resumen','calendario'].indexOf(v)<0)v='marcador';
   $$('[data-view]').forEach(function(s){s.hidden=s.getAttribute('data-view')!==v});
   $$('[data-nav]').forEach(function(a){if(a.getAttribute('data-nav')===v)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});
-  window.scrollTo(0,0);
+  curView=v;if(v==='resumen')renderSummary();window.scrollTo(0,0);
 }
 
 /* Acciones */
@@ -687,25 +818,28 @@ document.addEventListener('click',function(ev){
         clearTimeout(resetTimer);resetTimer=setTimeout(function(){t.removeAttribute('data-sure');t.textContent='Borrar todo'},4000);
       }
       break;
-    case 'redeem':
-      var r=S.rewards.find(function(x){return x.id===id}),k=creditor();
-      if(!r||k<0||r.cost>Math.abs(net())){toast('No hay saldo suficiente para este canje.');break}
-      pendingReward={r:r,k:k};
-      $('#sheetTitle').textContent=r.name;
-      $('#sheetInfo').textContent=nm(k)+' gasta '+r.cost+' puntos. Le quedarán '+(Math.abs(net())-r.cost)+'.';
-      $('#sdate').value=ymd(addDays(new Date(),1));$('#snote').value='';
-      $('#sheet').hidden=false;break;
+    case 'redeem':openRedeem(id,null);break;
+    case 'sugredeem':openRedeem(id,t.getAttribute('data-date'));break;
     case 'sheetcancel':$('#sheet').hidden=true;pendingReward=null;break;
     case 'sheetok':
       if(pendingReward){
         var pr=pendingReward,d=$('#sdate').value||TODAY;
-        S.entries.push({id:'c'+Date.now(),kind:'canje',who:pr.k,title:pr.r.name,pts:pr.r.cost,date:d,note:$('#snote').value.trim()});
+        S.entries.push({id:'c'+Date.now(),kind:'canje',who:pr.k,title:pr.r.name,pts:pr.r.cost,date:d,made:TODAY,note:$('#snote').value.trim()});
         save();pendingReward=null;$('#sheet').hidden=true;
         cal.y=parse(d).getFullYear();cal.m=parse(d).getMonth();cal.sel=d;
         render();celebrate(pr);toast('Canje hecho. Queda en el calendario.',{act:'gocal',label:'Ver'});
       }
       break;
     case 'gocal':location.hash='#calendario';$('#toast').hidden=true;break;
+    case 'persel':sum.per=t.getAttribute('data-per');sum.off=0;renderSummary();break;
+    case 'sumprev':sum.off--;renderSummary();break;
+    case 'sumnext':if(sum.off<0)sum.off++;renderSummary();break;
+    case 'sharecard':shareCard();break;
+    case 'copytext':copyText();break;
+    case 'jfreeze':useFreeze(Number(t.getAttribute('data-who')));break;
+    case 'jforgive':openForgive(Number(t.getAttribute('data-who')));break;
+    case 'jforgivego':doForgive(id,Number(t.getAttribute('data-who')));break;
+    case 'jcancel':$('#jsheet').hidden=true;break;
     case 'photo':photoFor=Number(t.getAttribute('data-i'));$('#photoIn').click();break;
     case 'rmphoto':S.avatars[Number(t.getAttribute('data-i'))]=null;save();render();toast('Foto quitada.');break;
     case 'newreward':openRew(null);break;
@@ -732,6 +866,8 @@ document.addEventListener('click',function(ev){
 });
 document.addEventListener('change',function(ev){
   var t=ev.target;
+  if(t.id==='spicyChk'){S.settings.spicy=t.checked;save();render();toast(t.checked?'Modo picante activado.':'Modo picante apagado.');return}
+  if(t.id==='expSel'){S.settings.expiry=Number(t.value);save();render();toast(S.settings.expiry?('Los puntos caducan a los '+S.settings.expiry+' días.'):'Los puntos ya no caducan.');return}
   if(t.hasAttribute('data-name')){
     var i=Number(t.getAttribute('data-name'));
     S.names[i]=t.value.trim()||('Persona '+(i+1));save();render();
@@ -762,6 +898,250 @@ document.addEventListener('click',function(ev){
   var e=S.entries.pop();if(e){save();render()}
   lastDel=null;$('#toast').hidden=true;
 });
+/* Comodines */
+function jokerFree(p){var m=TODAY.slice(0,7);return !S.jokers.some(function(j){return j.who===p&&j.date.slice(0,7)===m})}
+function isFrozen(p){return S.jokers.some(function(j){return j.who===p&&j.type==='freeze'&&dn(TODAY)<dn(j.date)+30})}
+function forgivable(p){
+  var lim=ymd(addDays(parse(TODAY),-(expDays()||90)));
+  return sorted(S.entries).filter(function(e){return e.kind==='salida'&&e.who===1-p&&!e.forgiven&&e.pts>0&&e.date>=lim}).slice(0,6);
+}
+function expSoon(){
+  var k=creditor(),exp=expDays();
+  if(k<0||!exp)return null;
+  var pts=0,min=1e9;
+  LG().lots[k].forEach(function(l){
+    var left=exp-lotAge(k,l,TODAY)+1;
+    if(left<=14){pts+=l.pts;if(left<min)min=left}
+  });
+  return pts?{who:k,pts:pts,days:min}:null;
+}
+function expWarn(){
+  var x=expSoon();if(!x)return '';
+  return '<p class="verdict warn">Ojo: a '+esc(nm(x.who))+' le caducan '+x.pts+' puntos '+(x.days<=1?'mañana':'en '+x.days+' días')+'. Mejor canjearlos.</p>';
+}
+function renderJokers(){
+  var k=creditor(),html='';
+  [0,1].forEach(function(p){
+    var free=jokerFree(p),frz=isFrozen(p),st,hint='';
+    if(free)st='Disponible este mes';
+    else{
+      var last=S.jokers.filter(function(j){return j.who===p}).slice(-1)[0];
+      st='Usado el '+fmtDate(last.date)+' ('+(last.type==='freeze'?'congelar puntos':'perdonar una salida')+')';
+    }
+    if(frz)st+=' · puntos congelados';
+    if(free&&k!==p)hint=' · Se usa cuando se tiene saldo a favor.';
+    var canF=free&&k===p&&!frz,canP=free&&k===p&&forgivable(p).length>0;
+    html+='<li class="jk" data-p="'+p+'">'+av(p,'s')+'<div class="rt"><b>Comodín de '+esc(nm(p))+'</b><span class="meta">'+esc(st+hint)+'</span></div>'+
+      '<div class="jb"><button class="btn sm" type="button" data-act="jfreeze" data-who="'+p+'"'+(canF?'':' disabled')+'>Congelar 30 días</button>'+
+      '<button class="btn sm" type="button" data-act="jforgive" data-who="'+p+'"'+(canP?'':' disabled')+'>Perdonar una salida</button></div></li>';
+  });
+  $('#jokers').innerHTML=html;
+  $('#expSel').value=String(expDays());$('#spicyChk').checked=!!(S.settings&&S.settings.spicy);
+}
+function useFreeze(p){
+  if(!jokerFree(p)||creditor()!==p){toast('Ese comodín no está disponible ahora.');return}
+  S.jokers.push({who:p,type:'freeze',date:TODAY});save();render();
+  toast('Puntos de '+nm(p)+' congelados 30 días.');
+}
+function openForgive(p){
+  var list=forgivable(p);
+  if(!jokerFree(p)||creditor()!==p||!list.length){toast('Ese comodín no está disponible ahora.');return}
+  $('#jinfo').textContent=nm(p)+' perdona una salida de '+nm(1-p)+'. Esos puntos se quitan del marcador.';
+  $('#jlist').innerHTML=list.map(function(e){
+    return '<li class="row" data-p="'+e.who+'" style="grid-template-columns:34px minmax(0,1fr) auto">'+av(e.who,'s')+
+      '<div class="rt"><b>'+esc(e.title)+'</b><span class="meta">'+esc(relDay(e.date)+' · '+e.pts+' puntos')+'</span></div>'+
+      '<button class="btn sm primary" type="button" data-act="jforgivego" data-id="'+esc(e.id)+'" data-who="'+p+'">Perdonar</button></li>';
+  }).join('');
+  $('#jsheet').hidden=false;
+}
+function doForgive(id,p){
+  var e=S.entries.find(function(x){return x.id===id});
+  if(!e||!jokerFree(p))return;
+  e.forgiven=true;S.jokers.push({who:p,type:'forgive',date:TODAY,target:id});
+  save();$('#jsheet').hidden=true;render();
+  toast(nm(p)+' perdona «'+e.title+'».');
+}
+
+/* Sugerencias */
+function freeDate(){
+  var t=parse(TODAY),used={},i,d;
+  S.entries.forEach(function(e){used[e.date]=1});
+  for(i=1;i<=21;i++){d=addDays(t,i);if(d.getDay()===6&&!used[ymd(d)])return ymd(d)}
+  for(i=1;i<=21;i++){d=addDays(t,i);if(d.getDay()===0&&!used[ymd(d)])return ymd(d)}
+  return ymd(addDays(t,1));
+}
+function dayWord(s){
+  var diff=dn(s)-dn(TODAY),o=diff<=7?{weekday:'long'}:{weekday:'long',day:'numeric',month:'short'};
+  return new Intl.DateTimeFormat('es-ES',o).format(parse(s));
+}
+function suggestions(){
+  var k=creditor(),c=Math.abs(net()),out=[];
+  if(k<0)return out;
+  var aff=allRewards().filter(function(r){return r.cost<=c}).sort(function(a,b){return b.cost-a.cost})[0];
+  var next=allRewards().filter(function(r){return r.cost>c}).sort(function(a,b){return a.cost-b.cost})[0];
+  var d=freeDate(),dw=dayWord(d),x=expSoon();
+  if(x&&aff){
+    out.push({t:nm(k)+', te caducan '+x.pts+' puntos '+(x.days<=1?'mañana':'en '+x.days+' días')+'. Mejor usarlos ya.',b:'Canjear «'+aff.name+'»',a:'sugredeem',id:aff.id,date:d});
+    if(jokerFree(k)&&!isFrozen(k))out.push({t:'Tienes el comodín de este mes: congela la caducidad 30 días.',b:'Congelar 30 días',a:'jfreeze',who:k});
+  }else if(aff){
+    out.push({t:'Llevas '+c+' puntos, '+nm(k)+'. ¿'+dw+' libre?',b:'Canjear «'+aff.name+'»',a:'sugredeem',id:aff.id,date:d});
+  }else if(next){
+    out.push({t:'Llevas '+c+' puntos, '+nm(k)+'. Te faltan '+(next.cost-c)+' para «'+next.name+'».'});
+  }
+  return out.slice(0,2);
+}
+function renderSug(){
+  $('#sug').innerHTML=suggestions().map(function(g){
+    return '<div class="sg"><p>'+esc(g.t)+'</p>'+(g.b?'<button class="btn primary sm" type="button" data-act="'+g.a+'"'+(g.id?' data-id="'+esc(g.id)+'"':'')+(g.date?' data-date="'+g.date+'"':'')+(g.who!=null?' data-who="'+g.who+'"':'')+'>'+esc(g.b)+'</button>':'')+'</div>';
+  }).join('');
+}
+function openRedeem(id,dateStr){
+  var r=allRewards().find(function(x){return x.id===id}),k=creditor();
+  if(!r||k<0||r.cost>Math.abs(net())){toast('No hay saldo suficiente para este canje.');return}
+  pendingReward={r:r,k:k};
+  $('#sheetTitle').textContent=r.name;
+  $('#sheetInfo').textContent=nm(k)+' gasta '+r.cost+' puntos. Le quedarán '+(Math.abs(net())-r.cost)+'.';
+  $('#sdate').value=dateStr||ymd(addDays(new Date(),1));$('#snote').value='';
+  $('#sheet').hidden=false;
+}
+$('#jsheet').addEventListener('click',function(ev){if(ev.target===this)this.hidden=true});
+document.addEventListener('keydown',function(ev){if(ev.key==='Escape'&&!$('#jsheet').hidden)$('#jsheet').hidden=true});
+
+/* Resumen y tarjeta para compartir */
+var sum={per:'semana',off:0},curView='marcador',cardCanvas=null,cardModel=null;
+var ZERO=['Periodo tranquilo: nadie ha salido y nadie debe nada.','Calma total. El marcador no se mueve.','Sin salidas, sin deudas. Casi sospechoso.'];
+var TIE=['Quedáis en tablas. Esta vez nadie cobra.','Empate. Todo el mundo ha salido y nadie ha ganado.','Tablas. La próxima ronda decide.'];
+var ONE=['Gana por la mínima, pero los puntos se cobran igual.','Por los pelos. Pero gana.','Victoria corta. Se admite una cena de consolación.'];
+var BIG=['Paliza. Que alguien prepare la cena.','Goleada: aquí hay una cena en pareja pendiente.','Esto es una paliza. Toca elegir restaurante.'];
+function shortD(d){return new Intl.DateTimeFormat('es-ES',{day:'numeric',month:'short'}).format(d)}
+function sumRange(){
+  var t=parse(TODAY),f,to,label;
+  if(sum.per==='semana'){
+    f=addDays(t,-((t.getDay()+6)%7)+7*sum.off);to=addDays(f,6);
+    label=sum.off===0?'Esta semana':(sum.off===-1?'La semana pasada':'Semana del '+shortD(f));
+  }else if(sum.per==='mes'){
+    f=new Date(t.getFullYear(),t.getMonth()+sum.off,1);to=new Date(f.getFullYear(),f.getMonth()+1,0);
+    label=sum.off===0?'Este mes':new Intl.DateTimeFormat('es-ES',{month:'long',year:'numeric'}).format(f);
+  }else{
+    var y=t.getFullYear()+sum.off;f=new Date(y,0,1);to=new Date(y,11,31);
+    label=sum.off===0?'Este año':String(y);
+  }
+  return {f:ymd(f),t:ymd(to),label:label};
+}
+function sumData(){
+  var r=sumRange(),cnt=[0,0],hrs=[0,0],pts=[0,0],can=[0,0];
+  S.entries.forEach(function(e){
+    if(e.date<r.f||e.date>r.t)return;
+    if(e.kind==='salida'){cnt[e.who]++;hrs[e.who]+=e.hours||0;pts[e.who]+=e.forgiven?0:e.pts}
+    else can[e.who]++;
+  });
+  var sc=[cnt[1],cnt[0]],win=sc[0]>sc[1]?0:(sc[1]>sc[0]?1:-1),tot=cnt[0]+cnt[1];
+  var v=(tot+Math.abs(sum.off)+sc[0]*3+sc[1])%3,head,hum;
+  if(!tot){head='Periodo en calma';hum=ZERO[v]}
+  else if(win<0){head='Empate a '+sc[0];hum=TIE[v]}
+  else{head=nm(win)+' gana '+sc[win]+'-'+sc[1-win];hum=(Math.abs(sc[0]-sc[1])===1?ONE:BIG)[v]}
+  var sub=tot?nm(0)+' salió '+cnt[0]+(cnt[0]===1?' vez':' veces')+'. '+nm(1)+', '+cnt[1]+'.':'Nadie ha salido.';
+  var k=creditor(),bal=k<0?'Estáis en paz.':nm(k)+' tiene '+Math.abs(net())+' puntos a favor.';
+  return {r:r,cnt:cnt,hrs:hrs,pts:pts,can:can,sc:sc,win:win,head:head,hum:hum,sub:sub,bal:bal,
+    text:'Te Debo Una · '+r.label+': '+head+'. '+sub+' '+hum+' '+bal};
+}
+function renderSummary(){
+  if(curView!=='resumen')return;
+  var d=sumData();
+  $$('[data-per]').forEach(function(b){b.setAttribute('aria-pressed',String(b.getAttribute('data-per')===sum.per))});
+  $('#sumLabel').textContent=d.r.label;
+  $('#sumNext').disabled=sum.off>=0;
+  function side(i){
+    return '<div class="side '+(i?'b':'a')+(d.win===-1||d.win===i?'':' dim')+'">'+av(i,'l')+'<div class="tag">'+esc(nm(i))+'</div>'+
+      '<div class="score">'+d.sc[i]+'</div><div class="sub">'+(d.win===i?'<span class="pill">Gana</span>':'&nbsp;')+'</div></div>';
+  }
+  $('#sumHead').innerHTML='<div class="board-row">'+side(0)+'<div class="vs">VS</div>'+side(1)+'</div>'+
+    '<p class="verdict"><b>'+esc(d.head)+'.</b> '+esc(d.hum)+'</p><p class="verdict">'+esc(d.sub)+'</p>';
+  var h=function(x){return String(Math.round(x*10)/10).replace('.',',')};
+  var ex=LG().expired;
+  var rows=[['Salidas',d.cnt[0],d.cnt[1]],['Horas fuera',h(d.hrs[0]),h(d.hrs[1])],['Puntos que costaron',d.pts[0],d.pts[1]],['Canjes hechos',d.can[0],d.can[1]],['Puntos caducados (total)',ex[0],ex[1]]];
+  $('#sumStats').innerHTML='<span></span><b class="pa">'+esc(nm(0))+'</b><b class="pb">'+esc(nm(1))+'</b>'+
+    rows.map(function(r){return '<span class="sl">'+r[0]+'</span><span class="sv">'+r[1]+'</span><span class="sv">'+r[2]+'</span>'}).join('');
+  $('#shareText').textContent=d.text;
+  drawCard(d);
+}
+function loadImg(src){return new Promise(function(res){var im=new Image();im.onload=function(){res(im)};im.onerror=function(){res(null)};im.src=src})}
+function avatarSrc(i){
+  var a=S.avatars[i];
+  if(a)return a;
+  return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(avatarSvg(i).replace('<svg ','<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" '));
+}
+function rr(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath()}
+function wrapText(c,text,x,y,maxW,lh){
+  var words=text.split(' '),line='',yy=y;
+  words.forEach(function(w){
+    var t=line?line+' '+w:w;
+    if(c.measureText(t).width>maxW&&line){c.fillText(line,x,yy);line=w;yy+=lh}else line=t;
+  });
+  c.fillText(line,x,yy);
+  return yy;
+}
+function drawCard(d){
+  cardModel=d;
+  var fonts=(document.fonts&&document.fonts.load)?Promise.all([document.fonts.load('800 80px "Big Shoulders Display"'),document.fonts.load('600 30px "Figtree"')]).catch(function(){}):Promise.resolve();
+  Promise.all([fonts,loadImg(avatarSrc(0)),loadImg(avatarSrc(1))]).then(function(r){
+    if(cardModel!==d)return;
+    var W=1080,H=1350,cv2=document.createElement('canvas');
+    cv2.width=W;cv2.height=H;
+    var c=cv2.getContext('2d'),D='"Big Shoulders Display","Arial Narrow",Impact,sans-serif',B='Figtree,system-ui,sans-serif';
+    c.fillStyle='#F5F1FB';c.fillRect(0,0,W,H);
+    c.fillStyle='#FFE08A';c.fillRect(0,0,W,22);
+    rr(c,48,70,W-96,H-140,48);c.fillStyle='#FFFFFF';c.fill();
+    c.textAlign='center';
+    c.fillStyle='#2A2540';c.font='800 58px '+D;c.fillText('TE DEBO UNA',W/2,170);
+    c.fillStyle='#6B6585';c.font='600 36px '+B;c.fillText(d.r.label,W/2,224);
+    [0,1].forEach(function(i){
+      var cx=i?780:300,cy=385,rad=115,img=r[i+1];
+      c.save();c.beginPath();c.arc(cx,cy,rad,0,Math.PI*2);c.closePath();c.clip();
+      if(img){var iw=img.width||200,ih=img.height||200,m=Math.min(iw,ih);c.drawImage(img,(iw-m)/2,(ih-m)/2,m,m,cx-rad,cy-rad,rad*2,rad*2)}
+      else{c.fillStyle='#E3DBF1';c.fillRect(cx-rad,cy-rad,rad*2,rad*2)}
+      c.restore();
+      c.lineWidth=12;c.strokeStyle=i?'#F9B1D0':'#9FE3D1';c.beginPath();c.arc(cx,cy,rad+6,0,Math.PI*2);c.stroke();
+      c.fillStyle='#2A2540';c.font='800 62px '+D;c.fillText(nm(i).toUpperCase(),cx,565);
+      c.fillStyle=(d.win===i)?(i?'#AD3573':'#1B7766'):'#B5AECB';c.font='800 230px '+D;c.fillText(String(d.sc[i]),cx,775);
+    });
+    c.fillStyle='#B5AECB';c.font='800 150px '+D;c.fillText('–',W/2,745);
+    var fs=100;c.fillStyle='#2A2540';c.font='800 '+fs+'px '+D;
+    while(c.measureText(d.head.toUpperCase()).width>880&&fs>40){fs-=4;c.font='800 '+fs+'px '+D}
+    c.fillText(d.head.toUpperCase(),W/2,905);
+    c.fillStyle='#6B6585';c.font='600 40px '+B;
+    var y2=wrapText(c,d.sub,W/2,965,880,52);
+    c.fillStyle='#2A2540';c.font='400 40px '+B;
+    var y3=wrapText(c,d.hum,W/2,y2+66,880,52);
+    c.font='700 38px '+B;
+    var bw=c.measureText(d.bal).width+80,by=y3+50;
+    rr(c,W/2-bw/2,by,bw,76,38);c.fillStyle='#FFF4CC';c.fill();
+    c.fillStyle='#3A2E00';c.fillText(d.bal,W/2,by+51);
+    c.fillStyle='#8B84A8';c.font='600 30px '+B;c.fillText('El marcador de favores de la pareja',W/2,1245);
+    cardCanvas=cv2;
+    try{$('#cardImg').src=cv2.toDataURL('image/png')}catch(e){}
+  });
+}
+function shareCard(){
+  if(!cardCanvas){toast('La tarjeta aún se está preparando.');return}
+  cardCanvas.toBlob(function(b){
+    var done=false;
+    try{
+      var f=new File([b],'te-debo-una.png',{type:'image/png'});
+      if(b&&navigator.canShare&&navigator.canShare({files:[f]})){
+        navigator.share({files:[f],title:'Te Debo Una',text:cardModel.text}).catch(function(){});
+        done=true;
+      }
+    }catch(e){}
+    if(!done)toast('Mantén pulsada la imagen para guardarla, o copia el texto.');
+  },'image/png');
+}
+function copyText(){
+  var t=cardModel?cardModel.text:'';
+  function fb(){toast('No he podido copiar. Selecciona el texto de debajo.')}
+  try{navigator.clipboard.writeText(t).then(function(){toast('Texto copiado. Pégalo en WhatsApp.')},fb)}catch(e){fb()}
+}
+
 /* Fotos */
 var photoFor=0;
 $('#photoIn').addEventListener('change',function(){
