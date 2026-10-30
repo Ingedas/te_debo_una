@@ -344,7 +344,7 @@ select{width:100%;min-height:44px;border:1px solid var(--line);border-radius:10p
         </select>
       </label>
       <p class="meta">Se cuentan desde el día de la salida. Hay que ponerse de acuerdo los dos.</p>
-      <label class="check" for="spicyChk"><input type="checkbox" id="spicyChk"><span>Modo picante: canjes más atrevidos, solo para adultos y de mutuo acuerdo</span></label>
+      <label class="check" for="spicyChk"><input type="checkbox" id="spicyChk"><span>🌶️ Modo picante: canjes más atrevidos, solo para adultos y de mutuo acuerdo</span></label>
     </section>
 
     <section data-view="resumen" hidden>
@@ -730,7 +730,7 @@ function renderRewards(){
     if(k<0)btn='<button class="btn sm" type="button" disabled>Sin saldo</button>';
     else if(r.cost>c)btn='<button class="btn sm" type="button" disabled>Faltan '+(r.cost-c)+'</button>';
     else btn='<button class="btn primary sm" type="button" data-act="redeem" data-id="'+esc(r.id)+'">Canjear</button>';
-    return '<li class="rew"><div style="min-width:0"><b>'+esc(r.name)+'</b>'+(r.spicy?' <span class="hot">picante</span>':'')+'<div class="meta">'+esc(r.desc||'')+'</div></div>'+
+    return '<li class="rew"><div style="min-width:0"><b>'+esc(r.name)+'</b>'+(r.spicy?' <span class="hot">🌶️ picante</span>':'')+'<div class="meta">'+esc(r.desc||'')+'</div></div>'+
       '<div class="cost">'+r.cost+'<small>pts</small></div>'+
       '<div class="act">'+(r.spicy?'<span></span>':'<button class="btn ghost sm" type="button" data-act="editreward" data-id="'+esc(r.id)+'" aria-label="Editar '+esc(r.name)+'">Editar</button>')+btn+'</div></li>';
   }).join('');
@@ -866,7 +866,7 @@ document.addEventListener('click',function(ev){
 });
 document.addEventListener('change',function(ev){
   var t=ev.target;
-  if(t.id==='spicyChk'){S.settings.spicy=t.checked;save();render();toast(t.checked?'Modo picante activado.':'Modo picante apagado.');return}
+  if(t.id==='spicyChk'){S.settings.spicy=t.checked;save();render();toast(t.checked?'🌶️ Modo picante activado.':'Modo picante apagado.');return}
   if(t.id==='expSel'){S.settings.expiry=Number(t.value);save();render();toast(S.settings.expiry?('Los puntos caducan a los '+S.settings.expiry+' días.'):'Los puntos ya no caducan.');return}
   if(t.hasAttribute('data-name')){
     var i=Number(t.getAttribute('data-name'));
